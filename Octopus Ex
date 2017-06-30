@@ -1,0 +1,65 @@
+Methane molecule
+CalculationMode = gs
+UnitsOutput = eV_Angstrom
+
+Radius = 3.5*angstrom
+Spacing = 0.22*angstrom
+
+CH = 1.2*angstrom
+%Coordinates
+  "C" |           0 |          0 |           0
+  "H" |  CH/sqrt(3) | CH/sqrt(3) |  CH/sqrt(3)
+  "H" | -CH/sqrt(3) |-CH/sqrt(3) |  CH/sqrt(3)
+  "H" |  CH/sqrt(3) |-CH/sqrt(3) | -CH/sqrt(3)
+  "H" | -CH/sqrt(3) | CH/sqrt(3) | -CH/sqrt(3)
+%
+
+•	We do not tell Octopus explicitly which BoxShape to use. The default is a union of spheres centered around each atom. This turns out to be the most economical choice in almost all cases.
+•	We also do not specify the %Species block. In this way, Octopus will use default pseudopotentials for both Carbon and Hydrogen. This should be OK in many cases, but, as a rule of thumb, you should do careful testing before using any pseudopotential for serious calculations.
+Tutorial:Geometry optimization
+Note 1: FIRE method is implemented and recommended to perform geometry optimization
+Plot Energy vs Bond distance 
+By simple inspection we realize that the equilibrium CH distance that we obtain is around 1.1 Å. This should be compared to the experimental value of 1.094 Å. From this data can you calculate the frequency of the vibrational breathing mode of methane?
+GSL:
+Multidimensional Minimization:
+for finding minima of arbitrary multidimensional functions.
+When running Octopus in geometry optimization mode the output will be a bit different from the normal ground-state mode. 
+At the end of each minimization step the code will print the total energy, the maximum force acting on the ions and the maximum displacement of the ions from the previous geometry to the next one.
+If the minimization was successful a file named min.xyz will be written in the working directory containing the minimized geometry. 
+You can also visualize the optimization process as an animation by loading work-geom.xyz as an XYZ file into XCrySDen.
+
+We have just performed the time-evolution of the system, departing from the ground-state, under the influence of no external perturbation. As a consequence, the electronic system does not evolve. The total energy does not change (this you may already see in the output file, the third column of numbers), nor should any other observable change. However, this kind of run is useful to check that the parameters that define the time evolution are correct
+CalculationMode = td
+UnitsOutput = eV_Angstrom
+
+Radius = 3.5*angstrom
+Spacing = 0.18*angstrom
+
+CH = 1.097*angstrom
+%Coordinates
+  "C" |           0 |          0 |           0
+  "H" |  CH/sqrt(3) | CH/sqrt(3) |  CH/sqrt(3)
+  "H" | -CH/sqrt(3) |-CH/sqrt(3) |  CH/sqrt(3)
+  "H" |  CH/sqrt(3) |-CH/sqrt(3) | -CH/sqrt(3)
+  "H" | -CH/sqrt(3) | CH/sqrt(3) | -CH/sqrt(3)
+%
+ 
+Tf  = 0.1/eV
+dt = 0.002/eV
+
+TDPropagator = aetrs
+TDMaxSteps = Tf/dt
+TDTimeStep = dt
+Before making long calculations, it is worthwhile spending some time choosing the largest time-step possible, to reduce the number of steps needed.
+
+You will see that for time-steps larger than 0.0024 the propagation gets unstable and the total energy of the system is no longer conserved. Very often it diverges rapidly or even becomes NaN.
+TDExponentialMethod 
+Method used to numerically calculate the exponential of the Hamiltonian
+TDPropagator 
+This variable determines which algorithm will be used to approximate the evolution operator U(t+δt,t)
+TDFunctions 
+This block specifies the shape of a "time-dependent function", such as the envelope needed when using the TDExternalFields block.
+
+Tutorial:Particle in a box
+ In the following input file, we can accomplish this by setting the "radius" to  , for the default box shape of "sphere" which means a line in 1D
+The calculations can be run with different "theory levels" that control how electrons are simulated
